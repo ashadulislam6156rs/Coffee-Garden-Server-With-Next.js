@@ -30,7 +30,7 @@ const client = new MongoClient(uri, {
 const run = async () => {
     
   try {
-    await client.connect();
+    // await client.connect();
       // Send a ping to confirm a successful connection
       
       const db = client.db("coffeeStore_DB");

@@ -34,20 +34,48 @@ const run = async () => {
       // Send a ping to confirm a successful connection
       
       const db = client.db("coffeeStore_DB");
-    const coffeeStoreColectoin = db.collection("coffees");
+    const coffeeStoreCollectoin = db.collection("coffees");
+    const coffeeBookMarksCollectoin = db.collection("bookMarks");
     
 
+    // impliment bookmarks coffees
+
+    app.post("/coffees/book-mark", async (req, res) => {
+          const newCoffee = req.body;
+          const result = await coffeeBookMarksCollectoin.insertOne(newCoffee);
+          res.send(result);
+      })
+
+app.get("/coffees/book-mark", async (req, res) => {
+      const email = req.query.email; 
+      const query = {};
+      if (email) {
+        query.userEmail = email;
+      }
+  const cursor = coffeeBookMarksCollectoin.find(query);
+  const result = await cursor.toArray();
+  res.send(result)
+          
+})
+    
+    app.delete("/coffees/book-mark:productId", async (req, res) => {
+        const productId = req.params.productId;
+        const query = { _id: new ObjectId(productId) }
+        const result = await coffeeBookMarksCollectoin.deleteOne(query);
+        res.send(result)
+      })
 
 
+      //others
      app.get("/coffees", async (req, res) => {
-          const cursor = coffeeStoreColectoin.find();
+          const cursor = coffeeStoreCollectoin.find();
           const result = await cursor.toArray();
           res.send(result)
      })
     
  app.get("/populer/coffees", async (req, res) => {
     
-    const result = await coffeeStoreColectoin
+    const result = await coffeeStoreCollectoin
       .find()
       .sort({ rating: -1 })   
       .limit(6)               
@@ -59,20 +87,20 @@ const run = async () => {
     //spacific user products
     app.get("/user/coffees", async (req, res) => {
       const email = req.query.email;
-      console.log(email);
+    
       
       const query = {};
       if (email) {
         query.userEmail = email;
       }
-          const cursor = coffeeStoreColectoin.find(query);
+          const cursor = coffeeStoreCollectoin.find(query);
           const result = await cursor.toArray();
           res.send(result)
       })
 
       app.post("/coffees", async (req, res) => {
           const newCoffee = req.body;
-          const result = await coffeeStoreColectoin.insertOne(newCoffee);
+          const result = await coffeeStoreCollectoin.insertOne(newCoffee);
           res.send(result);
       })
 
@@ -81,14 +109,14 @@ const run = async () => {
     app.get("/productDetails/:id", async (req, res) => {
       const id = req.params.id;
       const query = {_id: new ObjectId(id)}
-      const result = await coffeeStoreColectoin.findOne(query);
+      const result = await coffeeStoreCollectoin.findOne(query);
       res.send(result);
     })
 
     app.get("/updateCoffeeDetails/:id", async (req, res) => {
       const id = req.params.id;
       const query = {_id: new ObjectId(id)}
-      const result = await coffeeStoreColectoin.findOne(query);
+      const result = await coffeeStoreCollectoin.findOne(query);
       res.send(result);
     })
 
@@ -106,7 +134,7 @@ const run = async () => {
           image: updateProduct.image,
       }
       }
-      const result = await coffeeStoreColectoin.updateOne(query,update);
+      const result = await coffeeStoreCollectoin.updateOne(query,update);
       res.send(result)
 
     })
@@ -114,7 +142,7 @@ const run = async () => {
 app.delete("/coffees/:productId", async (req, res) => {
         const productId = req.params.productId;
         const query = { _id: new ObjectId(productId) }
-        const result = await coffeeStoreColectoin.deleteOne(query);
+        const result = await coffeeStoreCollectoin.deleteOne(query);
         res.send(result)
       })
       
